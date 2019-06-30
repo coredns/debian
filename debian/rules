@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+
+CORE_VERSION	:= $(shell grep 'CoreVersion' coremain/version.go | awk '{ print $$3 }' | tr -d '"')
+VERSION 	:= $(CORE_VERSION)-$(shell git rev-parse --short HEAD)
+LINUX_ARCH	:= $(DEB_TARGET_ARCH)
+DEB_HOST_ARCH   := $(DEB_TARGET_ARCH)
+DISTRIBUTION    := $(shell lsb_release -sr)
+PACKAGEVERSION  := $(VERSION)-0~$(DISTRIBUTION)0
+
+# Debian calls it armhf, we call it arm.
+ifeq ($(DEB_TARGET_ARCH),armhf)
+    LINUX_ARCH=arm
+endif
+
+%:
+	dh_clean
+	dh $@ --with systemd
+
+override_dh_strip:
+	echo dh_strip
+
+override_dh_auto_clean:
+	rm -rf debian/coredns/usr/bin debian/coredns/etc/coredns debian/man
+
+override_dh_auto_test:
+override_dh_auto_build:
+	make -f Makefile.release DOCKER=/dev/null VERSION=$(VERSION) LINUX_ARCH=$(LINUX_ARCH) build-linux
+
+override_dh_auto_install:
+	mkdir -p debian/coredns/usr/bin debian/coredns/etc/coredns
+	mkdir -p debian/man
+	cp coredns debian/coredns/usr/bin
+	cp man/* debian/man/
+	cp debian/Corefile debian/coredns/etc/coredns/Corefile
+
+override_dh_gencontrol:
+	dh_gencontrol -- -v$(PACKAGEVERSION)
