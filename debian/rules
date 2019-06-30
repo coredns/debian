@@ -24,7 +24,7 @@ override_dh_auto_clean:
 
 override_dh_auto_test:
 override_dh_auto_build:
-	make -f Makefile.release DOCKER=/dev/null VERSION=$(VERSION) LINUX_ARCH=$(LINUX_ARCH) build-linux
+	make -f Makefile.release DOCKER=/dev/null VERSION=$(VERSION) LINUX_ARCH=$(LINUX_ARCH) build
 
 override_dh_auto_install:
 	mkdir -p debian/coredns/usr/bin debian/coredns/etc/coredns
