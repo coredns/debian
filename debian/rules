@@ -29,7 +29,7 @@ override_dh_auto_build:
 override_dh_auto_install:
 	mkdir -p debian/coredns/usr/bin debian/coredns/etc/coredns
 	mkdir -p debian/man
-	cp coredns debian/coredns/usr/bin
+	cp build/linux/$(LINUX_ARCH)/coredns debian/coredns/usr/bin
 	cp man/* debian/man/
 	cp debian/Corefile debian/coredns/etc/coredns/Corefile
 
